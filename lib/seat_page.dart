@@ -47,22 +47,22 @@ class _SeatPageState extends State<SeatPage> {
 
         if(isSeated) return;
 
-        Api.sentSeats(table.toString(), body).then((value) {
-          if (value.success ?? false) {
-            seats = value.data?.seats ?? [];
-            setState(() {});
-          }
-        });
+        // Api.sentSeats(table.toString(), body).then((value) {
+        //   if (value.success ?? false) {
+        //     seats = value.data?.seats ?? [];
+        //     setState(() {});
+        //   }
+        // });
       }
     });
 
-    Api.getSeats('1').then((value) {
-      if (value.success ?? false) {
-        seats = value.data?.seats ?? [];
-        table = value.data?.reportId ?? 0;
-        setState(() {});
-      }
-    });
+    // Api.getSeats('1').then((value) {
+    //   if (value.success ?? false) {
+    //     seats = value.data?.seats ?? [];
+    //     table = value.data?.reportId ?? 0;
+    //     setState(() {});
+    //   }
+    // });
   }
 
   @override
@@ -120,16 +120,16 @@ class _SeatPageState extends State<SeatPage> {
 
   List<Widget> returnWidget() {
     List<Widget> widgets = [];
-
-    seats.forEach((element) {
-      widgets.add(Container(
-        margin: const EdgeInsets.all(12.0),
-        decoration: BoxDecoration(
-            border:
-                Border.all(color: (element.checked ?? false) ? Color(0xFF62A71D) : Colors.black)),
-        child: Center(child: FittedBox(child: Text(element.seat ?? '', style: TextStyle(color: (element.checked ?? false) ? Color(0xFF62A71D) : Colors.black),))),
-      ));
-    });
+    //
+    // seats.forEach((element) {
+    //   widgets.add(Container(
+    //     margin: const EdgeInsets.all(12.0),
+    //     decoration: BoxDecoration(
+    //         border:
+    //             Border.all(color: (element.checked ?? false) ? Color(0xFF62A71D) : Colors.black)),
+    //     child: Center(child: FittedBox(child: Text(element.seat ?? '', style: TextStyle(color: (element.checked ?? false) ? Color(0xFF62A71D) : Colors.black),))),
+    //   ));
+    // });
 
     return widgets;
   }

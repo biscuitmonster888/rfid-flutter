@@ -26,16 +26,18 @@ class ResponseSeats {
 
 class Data {
   int? reportId;
-  List<Seats>? seats;
+  String? status;
+  List<Layout>? layout;
 
-  Data({this.reportId, this.seats});
+  Data({this.reportId, this.status, this.layout});
 
   Data.fromJson(Map<String, dynamic> json) {
     reportId = json['report_id'];
-    if (json['seats'] != null) {
-      seats = <Seats>[];
-      json['seats'].forEach((v) {
-        seats!.add(new Seats.fromJson(v));
+    status = json['status'];
+    if (json['layout'] != null) {
+      layout = <Layout>[];
+      json['layout'].forEach((v) {
+        layout!.add(new Layout.fromJson(v));
       });
     }
   }
@@ -43,9 +45,11 @@ class Data {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['report_id'] = this.reportId;
-    if (this.seats != null) {
-      data['seats'] = this.seats!.map((v) => v.toJson()).toList();
+    data['status'] = this.status;
+    if (this.layout != null) {
+      data['layout'] = this.layout!.map((v) => v.toJson()).toList();
     }
     return data;
   }
 }
+

@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:get/get_core/src/smart_management.dart';
+import 'package:get/get_navigation/get_navigation.dart';
 import 'package:rfid/seat_page.dart';
 import 'package:sunmi_uhf/sunmi_uhf.dart';
+
+import 'di/app_routes.dart';
 
 void main() {
   runApp(const MyApp());
@@ -26,15 +30,6 @@ class MyApp extends StatelessWidget {
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
 
   final String title;
 
@@ -73,37 +68,16 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
+      debugShowCheckedModeBanner: false,
+      enableLog: true,
+      initialRoute: AppRoutes.SPLASH,
+      defaultTransition: Transition.fade,
+      getPages: AppRoutes.pages(),
+      smartManagement: SmartManagement.keepFactory,
+      title: 'DEFUNDEN',
+      themeMode: ThemeMode.system,
       builder: EasyLoading.init(),
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Sunmi uhf'),
-        ),
-        body: Center(
-          child:
-          ElevatedButton(onPressed: () async {
-            _isConnected = await SunmiUhf.init();
-            if(_isConnected){
-              //Navigator.pop(context);
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const SeatPage())
-              );
-
-              return;
-
-              SunmiUhf.onUhfScanned().listen((event) {
-                if(event != null) {
-                  _result = event;
-                  setState(() {});
-                }
-
-              });
-            }
-            setState(() {});
-          }, child: const Text('Connect RFID Device'))
-        ),
-      ),
     );
   }
 }
