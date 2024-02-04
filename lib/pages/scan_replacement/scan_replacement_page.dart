@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:rfid/pages/scan_replacement/scan_replacement_controller.dart';
+import 'package:sunmi_uhf/sunmi_uhf.dart';
 
 
 class ScanReplacementPage extends StatefulWidget {
@@ -15,6 +16,21 @@ class _ScanReplacementState extends State<ScanReplacementPage> {
   void initState() {
     super.initState();
     controller.start();
+
+    SunmiUhf.onUhfScanned().listen((event) {
+      if (event != null) {
+        var _result = event;
+        print('TAG ${_result}');
+
+        if(!controller.rfidList.value.contains(_result)) {
+          controller.rfidList.value.add(_result);
+          setState(() {
+
+          });
+        }
+
+      }
+    });
   }
 
   Future<bool> _willPopCallback() async {
@@ -393,6 +409,7 @@ class _ScanReplacementState extends State<ScanReplacementPage> {
                         ),
                         onPressed: () {
                           controller.page.value = 1;
+                          runScanner();
                         },
                         child: Container(
                           child: Text(
@@ -418,6 +435,7 @@ class _ScanReplacementState extends State<ScanReplacementPage> {
                           onPrimary: Colors.white, // foreground
                         ),
                         onPressed: () {
+                          runScanner();
                         },
                         child: Container(
                           child: Text(
@@ -482,4 +500,9 @@ class _ScanReplacementState extends State<ScanReplacementPage> {
     });
   }
 
+  runScanner() async {
+    var _isConnected = await SunmiUhf.isConnect();
+    if (!_isConnected) return;
+    SunmiUhf.scan();
+  }
 }

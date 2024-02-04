@@ -1,9 +1,10 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:rfid/pages/scan/scan_controller.dart';
-import '../../api/api.dart';
+import 'package:sunmi_uhf/sunmi_uhf.dart';
 import '../../model/seats.dart';
 
 class ScanPage extends StatefulWidget {
@@ -13,11 +14,31 @@ class ScanPage extends StatefulWidget {
 
 class _ScanState extends State<ScanPage> {
   ScanController controller = Get.find();
+  Timer? timer;
 
   @override
   void initState() {
     super.initState();
     controller.start();
+
+    SunmiUhf.onUhfScanned().listen((event) {
+      if (event != null) {
+        var _result = event;
+        print('TAG ${_result}');
+
+        var body = json.encode({
+          "tags": [_result]
+        });
+
+        controller.sentSeats(body);
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    timer?.cancel();
+    super.dispose();
   }
 
   Future<bool> _willPopCallback() async {
@@ -197,6 +218,9 @@ class _ScanState extends State<ScanPage> {
                           onPressed: () {
                             controller.isFirst.value = false;
                             controller.isScanning.value = true;
+
+                            timer = Timer.periodic(const Duration(seconds: 3), (Timer t) => runScanner());
+                            setState(() {});
                           },
                           child: Container(
                           child: Text(
@@ -225,6 +249,11 @@ class _ScanState extends State<ScanPage> {
                         ),
                         onPressed: () {
                           controller.isScanning.value =  !controller.isScanning.value;
+                          if ( controller.isScanning.value) {
+                            timer = Timer.periodic(const Duration(seconds: 3), (Timer t) => runScanner());
+                          } else {
+                            timer?.cancel();
+                          }
                         },
                         child: Container(
                           child: Text(
@@ -362,5 +391,11 @@ class _ScanState extends State<ScanPage> {
     }
 
     return widgets;
+  }
+
+  runScanner() async {
+    var _isConnected = await SunmiUhf.isConnect();
+    if (!_isConnected) return;
+    SunmiUhf.scan();
   }
 }

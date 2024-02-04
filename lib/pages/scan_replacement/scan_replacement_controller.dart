@@ -15,7 +15,7 @@ class ScanReplacementController extends GetxController {
   RxString model = ''.obs;
   RxString expire = ''.obs;
   RxString tagId = ''.obs;
-  RxList<String> rfidList = <String>['E20047024730602394290114','000000000000000010000069'].obs;
+  RxList<String> rfidList = <String>[].obs;
   Rx<ResponseRfidDetail> rfidDetail = ResponseRfidDetail().obs;
 
   start() {

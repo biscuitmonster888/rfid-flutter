@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:get/get.dart';
 
 import '../../api/api.dart';
@@ -10,6 +12,7 @@ class ScanController extends GetxController {
   Rx<bool> isScanning = false.obs;
   Rx<bool> isFirst = true.obs;
   Rx<String> status = ''.obs;
+  Timer? timer;
 
   start() {
     title.value = (Get.arguments ?? {})['title'];
