@@ -29,29 +29,25 @@ class ScanController extends GetxController {
     });
   }
 
-  sentSeats(Object? param) {
-    Api.sentSeats(reportId.value.toString(), param).then((value) {
-      if (value.success ?? false) {
-        status.value = value.data?.status ?? '';
-        List<Layout>? items = value.data?.layout;
-        if (items != null) data.value = items;
-      }
-    });
+  Future<void> sentSeats(Object? param) async {
+    final value = await Api.sentSeats(reportId.value.toString(), param);
+
+    if (value.success ?? false) {
+      status.value = value.data?.status ?? '';
+      List<Layout>? items = value.data?.layout;
+      if (items != null) data.value = items;
+    }
   }
 
   Future<bool> cancelSchedule() async {
     final result = await Api.cancelSchedule(reportId.value.toString());
 
-
     return result['success'] ?? false;
   }
-
 
   Future<bool> submitSchedule() async {
     final result = await Api.submitSchedule(reportId.value.toString());
 
-
     return result['success'] ?? false;
   }
-
 }

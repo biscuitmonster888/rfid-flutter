@@ -21,7 +21,7 @@ class _ScanState extends State<ScanPage> {
     super.initState();
     controller.start();
 
-    SunmiUhf.onUhfScanned().listen((event) {
+    SunmiUhf.onUhfScanned().listen((event) async {
       if (event != null) {
         var _result = event;
         print('TAG ${_result}');
@@ -30,7 +30,7 @@ class _ScanState extends State<ScanPage> {
           "tags": [_result]
         });
 
-        controller.sentSeats(body);
+        await controller.sentSeats(body);
       }
     });
   }
@@ -42,7 +42,6 @@ class _ScanState extends State<ScanPage> {
   }
 
   Future<bool> _willPopCallback() async {
-
     showDialog<String>(
       context: context,
       builder: (BuildContext context) => Dialog(
@@ -63,10 +62,7 @@ class _ScanState extends State<ScanPage> {
               SizedBox(
                 height: 8,
               ),
-              Container(
-                  alignment: Alignment.topLeft,
-                  child: Text(
-                      'Are you sure to cancel the current report ?')),
+              Container(alignment: Alignment.topLeft, child: Text('Are you sure to cancel the current report ?')),
               const SizedBox(height: 12),
               Row(
                 children: [
@@ -85,10 +81,9 @@ class _ScanState extends State<ScanPage> {
                   TextButton(
                     onPressed: () {
                       controller.cancelSchedule().then((value) {
-                        if(value)Get.back();
+                        if (value) Get.back();
 
                         Navigator.pop(context);
-
                       });
                     },
                     child: const Text(
@@ -142,10 +137,7 @@ class _ScanState extends State<ScanPage> {
                           SizedBox(
                             height: 8,
                           ),
-                          Container(
-                              alignment: Alignment.topLeft,
-                              child: Text(
-                                  'Are you sure to cancel the current report ?')),
+                          Container(alignment: Alignment.topLeft, child: Text('Are you sure to cancel the current report ?')),
                           const SizedBox(height: 12),
                           Row(
                             children: [
@@ -164,10 +156,9 @@ class _ScanState extends State<ScanPage> {
                               TextButton(
                                 onPressed: () {
                                   controller.cancelSchedule().then((value) {
-                                    if(value)Get.back();
+                                    if (value) Get.back();
 
                                     Navigator.pop(context);
-
                                   });
                                 },
                                 child: const Text(
@@ -196,25 +187,27 @@ class _ScanState extends State<ScanPage> {
                         padding: const EdgeInsets.all(8),
                         itemCount: controller.data.length,
                         itemBuilder: (BuildContext context, int index) {
-                          return Row(
-                            children: [...getItems(controller.data[index].seats)],
+                          return Obx(
+                            () => Row(
+                              children: [...getItems(controller.data[index].seats)],
+                            ),
                           );
                         }),
                   ),
                 ),
-                if(controller.isFirst.value)
-                Container(
-                  color: Colors.white,
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Container(),
-                      ),
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          primary: Colors.black, // background
-                          onPrimary: Colors.white, // foreground
+                if (controller.isFirst.value)
+                  Container(
+                    color: Colors.white,
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Container(),
                         ),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            primary: Colors.black, // background
+                            onPrimary: Colors.white, // foreground
+                          ),
                           onPressed: () {
                             controller.isFirst.value = false;
                             controller.isScanning.value = true;
@@ -223,128 +216,135 @@ class _ScanState extends State<ScanPage> {
                             setState(() {});
                           },
                           child: Container(
-                          child: Text(
-                            'START',
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                            child: Text(
+                              'START',
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                            ),
                           ),
                         ),
-                      ),
-                      Expanded(
-                        child: Container(),
-                      ),
-                    ],
+                        Expanded(
+                          child: Container(),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                if(!controller.isFirst.value)
-                Container(
-                  color: Colors.white,
-                  child: Row(
-                    children: [
-                      Expanded(child: Container(),),
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          primary: Colors.black, // background
-                          onPrimary: Colors.white, // foreground
+                if (!controller.isFirst.value)
+                  Container(
+                    color: Colors.white,
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Container(),
                         ),
-                        onPressed: () {
-                          controller.isScanning.value =  !controller.isScanning.value;
-                          if ( controller.isScanning.value) {
-                            timer = Timer.periodic(const Duration(seconds: 3), (Timer t) => runScanner());
-                          } else {
-                            timer?.cancel();
-                          }
-                        },
-                        child: Container(
-                          child: Text(
-                            controller.isScanning.value == true ? 'STOP' : 'RESUME',
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(fontSize: 18,fontWeight: FontWeight.bold),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            primary: Colors.black, // background
+                            onPrimary: Colors.white, // foreground
+                          ),
+                          onPressed: () {
+                            controller.isScanning.value = !controller.isScanning.value;
+                            if (controller.isScanning.value) {
+                              timer = Timer.periodic(const Duration(seconds: 3), (Timer t) => runScanner());
+                            } else {
+                              timer?.cancel();
+                            }
+                          },
+                          child: Container(
+                            child: Text(
+                              controller.isScanning.value == true ? 'STOP' : 'RESUME',
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                            ),
                           ),
                         ),
-                      ),
-                      if( controller.isScanning.value == false)
-                      Expanded(child: Container(),),
-                      if( controller.isScanning.value == false)
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          primary: Colors.black, // background
-                          onPrimary: Colors.white, // foreground
-                        ),
-                        onPressed: () {
-                          showDialog<String>(
-                            context: context,
-                            builder: (BuildContext context) => Dialog(
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: <Widget>[
-                                    Container(
-                                        alignment: Alignment.topLeft,
-                                        child: const Text(
-                                          'Confirm Submission?',
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.bold,
+                        if (controller.isScanning.value == false)
+                          Expanded(
+                            child: Container(),
+                          ),
+                        if (controller.isScanning.value == false)
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              primary: Colors.black, // background
+                              onPrimary: Colors.white, // foreground
+                            ),
+                            onPressed: () {
+                              showDialog<String>(
+                                context: context,
+                                builder: (BuildContext context) => Obx(
+                                  () => Dialog(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        mainAxisAlignment: MainAxisAlignment.start,
+                                        children: <Widget>[
+                                          Container(
+                                              alignment: Alignment.topLeft,
+                                              child: const Text(
+                                                'Confirm Submission?',
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              )),
+                                          SizedBox(
+                                            height: 8,
                                           ),
-                                        )),
-                                    SizedBox(
-                                      height: 8,
-                                    ),
-                                    Container(
-                                        alignment: Alignment.topLeft,
-                                        child: Text(
-                                            'Are you sure to submit the current report ?\n ${controller.title}\n Seat scanned: ${controller.status}')),
-                                    const SizedBox(height: 12),
-                                    Row(
-                                      children: [
-                                        Expanded(
-                                          child: Container(),
-                                        ),
-                                        TextButton(
-                                          onPressed: () {
-                                            Navigator.pop(context);
-                                          },
-                                          child: const Text(
-                                            'CANCEL',
-                                            style: TextStyle(color: Colors.black),
-                                          ),
-                                        ),
-                                        TextButton(
-                                          onPressed: () {
-                                            controller.submitSchedule().then((value) {
-                                              if(value)Get.back();
+                                          Container(
+                                              alignment: Alignment.topLeft,
+                                              child: Text(
+                                                  'Are you sure to submit the current report ?\n ${controller.title}\n Seat scanned: ${controller.status}')),
+                                          const SizedBox(height: 12),
+                                          Row(
+                                            children: [
+                                              Expanded(
+                                                child: Container(),
+                                              ),
+                                              TextButton(
+                                                onPressed: () {
+                                                  Navigator.pop(context);
+                                                },
+                                                child: const Text(
+                                                  'CANCEL',
+                                                  style: TextStyle(color: Colors.black),
+                                                ),
+                                              ),
+                                              TextButton(
+                                                onPressed: () {
+                                                  controller.submitSchedule().then((value) {
+                                                    if (value) Get.back();
 
-                                              Navigator.pop(context);
-
-                                            });
-                                          },
-                                          child: const Text(
-                                            'OK',
-                                            style: TextStyle(color: Colors.black),
+                                                    Navigator.pop(context);
+                                                  });
+                                                },
+                                                child: const Text(
+                                                  'OK',
+                                                  style: TextStyle(color: Colors.black),
+                                                ),
+                                              ),
+                                            ],
                                           ),
-                                        ),
-                                      ],
+                                        ],
+                                      ),
                                     ),
-                                  ],
+                                  ),
                                 ),
+                              );
+                            },
+                            child: Container(
+                              child: Text(
+                                'SUBMIT',
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                               ),
                             ),
-                          );
-                        },
-                        child: Container(
-                          child: Text(
-                           'SUBMIT',
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(fontSize: 18,fontWeight: FontWeight.bold),
                           ),
+                        Expanded(
+                          child: Container(),
                         ),
-                      ),
-                      Expanded(child: Container(),),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
               ],
             ),
           ),
@@ -354,8 +354,7 @@ class _ScanState extends State<ScanPage> {
   }
 
   List<Widget> getItems(List<Seats>? items) {
-    if(items == null) return [];
-
+    if (items == null) return [];
 
     List<Widget> widgets = [];
 
@@ -365,14 +364,15 @@ class _ScanState extends State<ScanPage> {
           child: items[i].space == true
               ? Container()
               : GestureDetector(
-            onTap: () {
-              return; // for dev
-              var body = json.encode({
-                "tags": [items[i].tagId]
-              });
-              controller.sentSeats(body);
-            },
-                child: Container(
+                  onTap: () async {
+                    return; // for dev
+                    var body = json.encode({
+                      "tags": [items[i].tagId]
+                    });
+
+                    await controller.sentSeats(body);
+                  },
+                  child: Container(
                     margin: EdgeInsets.all(4),
                     padding: EdgeInsets.all(14),
                     decoration: BoxDecoration(
@@ -385,7 +385,7 @@ class _ScanState extends State<ScanPage> {
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ))),
                   ),
-              ),
+                ),
         ),
       );
     }
