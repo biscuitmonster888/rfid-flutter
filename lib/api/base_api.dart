@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 
 
 class BaseApi {
-  static var API_NAME = 'https://aeroguard.genwhytech.com';
+  static var API_NAME = 'https://app.defunden.com';
 
   static Future<dynamic> post(
       {required String url, Object? param, bool isJsonString = false}) async {
